@@ -22,7 +22,7 @@ const SearchBar = ({ onSearch }) => {
         onChange={(e) => setCity(e.target.value)}
       />
       <button type="submit" className="btn btn-primary">
-        Buscar
+        Cercare
       </button>
     </form>
   );
