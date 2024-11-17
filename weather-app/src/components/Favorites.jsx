@@ -1,29 +1,67 @@
-import React from 'react';
+import React, { useState } from 'react';
+import WeatherDetails from './WeatherDetails';
+import HourlyWeather from './HourlyWeather';
 import '../styles/Favorites.css';
 
-const Favorites = ({ favorites, onRemove }) => {
+
+const Favorites = ({ favorites, onRemove, hourlyData }) => {
+  const [expandedCity, setExpandedCity] = useState(null);
+
+  const handleExpand = (cityName) => {
+    setExpandedCity(expandedCity === cityName ? null : cityName);
+  };
+
   return (
     <div className="mt-5">
-      <h3 className="text-center text-primary mb-4">Ciudades favoritas</h3>
+      <h3 className="text-center text-primary mb-4">Città preferite</h3>
       {favorites.length === 0 ? (
-        <p className="text-center text-muted">No tienes ciudades favoritas aún.</p>
+        <p className="text-center text-muted">Non hai ancora città preferite.</p>
       ) : (
-        <ul className="list-group">
+        <div className="row">
           {favorites.map((city, index) => (
-            <li
-              key={index}
-              className="list-group-item d-flex justify-content-between align-items-center"
-            >
-              <span className="text-dark">{city.name}</span>
-              <button
-                className="btn btn-danger btn-sm"
-                onClick={() => onRemove(city.name)}
-              >
-                Eliminar
-              </button>
-            </li>
+            <div key={index} className="col-md-3 mb-4">
+              <div className="card">
+                <div className="card-body">
+                  <h5 className="card-title">{city.name}</h5>
+                  {city.current_weather && city.current_weather.temperature !== undefined ? (
+                    <p className="temperature-text">{city.current_weather.temperature}°C</p>
+                  ) : (
+                    <p className="text-muted">Temperatura non disponibile</p>
+                  )}
+
+                  <div className="btn-group w-100">
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => onRemove(city.name)}
+                    >
+                      Eliminare
+                    </button>
+                    <button
+                      className="btn btn-info btn-sm"
+                      onClick={() => handleExpand(city.name)}
+                    >
+                      {expandedCity === city.name ? 'Cerrar' : 'Ver detalles'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {expandedCity === city.name && (
+                <div className="expanded-card">
+                  <button className="close-btn" onClick={() => setExpandedCity(null)}>×</button>
+                  <div className="expanded-content">
+                    <WeatherDetails 
+                    weatherData={city} 
+                    onAddFavorite={() => {}} 
+                    onClose={() => setExpandedCity(null)} />
+                    <HourlyWeather 
+                    hourlyData={hourlyData} 
+                    isVisible={expandedCity === city.name} />
+                  </div>
+                </div>
+              )}
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

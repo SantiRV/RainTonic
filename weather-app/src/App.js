@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import SearchBar from './components/SearchBar.jsx';
 import WeatherDetails from './components/WeatherDetails.jsx';
 import Favorites from './components/Favorites.jsx';
-import TemperatureChart from './components/TemperatureChart.jsx';
-
+import HourlyWeather from './components/HourlyWeather.jsx';
+import Header from './components/Header.jsx';
 
 const App = () => {
   const [weatherData, setWeatherData] = useState(null);
   const [favorites, setFavorites] = useState([]);
   const [hourlyData, setHourlyData] = useState([]);
+  const [isWeatherDetailsOpen, setIsWeatherDetailsOpen] = useState(false); 
 
   useEffect(() => {
     const savedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
-    setFavorites(savedFavorites);
+    const sortedFavorites = sortFavoritesByTemperature(savedFavorites);
+    setFavorites(sortedFavorites);
   }, []);
+  
 
   const handleSearch = async (city) => {
     try {
@@ -31,59 +34,86 @@ const App = () => {
         const weatherData = await weatherResponse.json();
 
         const hourlyResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,weathercode`
         );
         const hourlyData = await hourlyResponse.json();
 
-        setWeatherData({ ...weatherData, name, latitude, longitude });
-        setHourlyData(hourlyData.hourly.temperature_2m);
+        setWeatherData({ ...weatherData, name });
+        setHourlyData(
+          hourlyData.hourly.time.slice(0, 24).map((time, index) => ({
+            time,
+            temperature: hourlyData.hourly.temperature_2m[index],
+            weatherCode: hourlyData.hourly.weathercode[index],
+          }))
+        );
+        setIsWeatherDetailsOpen(true); 
       } else {
-        console.log('Ciudad no encontrada');
+        console.error('Città non trovata');
       }
     } catch (error) {
-      console.error('Error al buscar el clima:', error);
+      console.error('Errore durante la ricerca del meteo:', error);
     }
   };
 
-  const addFavorite = (city) => {
-    if (!favorites.some((fav) => fav.name === city.name)) {
-      const newFavorites = [...favorites, city];
-      setFavorites(newFavorites);
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
-    }
+  const handleCloseWeatherDetails = () => {
+    setIsWeatherDetailsOpen(false); 
   };
+
+  const sortFavoritesByTemperature = (favorites) => {
+    return favorites.sort((a, b) => {
+      const tempA = a.current_weather?.temperature || 0;
+      const tempB = b.current_weather?.temperature || 0;
+      return tempA - tempB;
+    });
+  };
+  
+
+  const addFavorite = (cityData) => {
+    const newFavorite = {
+      name: cityData.name,
+      current_weather: cityData.current_weather, 
+      hourlyData: hourlyData, 
+    };
+  
+    const updatedFavorites = [...favorites, newFavorite];
+    const sortedFavorites = sortFavoritesByTemperature(updatedFavorites);
+  
+    setFavorites(sortedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(sortedFavorites));
+  };
+  
+  
 
   const removeFavorite = (cityName) => {
     const updatedFavorites = favorites.filter((fav) => fav.name !== cityName);
-    setFavorites(updatedFavorites);
-    localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+    const sortedFavorites = sortFavoritesByTemperature(updatedFavorites);
+  
+    setFavorites(sortedFavorites);
+    localStorage.setItem('favorites', JSON.stringify(sortedFavorites));
   };
-
-  const chartData = [
-    { x: '12:00', y: 22 },
-    { x: '13:00', y: 24 },
-    { x: '14:00', y: 23 },
-    { x: '15:00', y: 25 },
-    { x: '16:00', y: 27 },
-    { x: '17:00', y: 28 },
-    { x: '18:00', y: 26 },
-    { x: '19:00', y: 24 },
-    { x: '20:00', y: 22 },
-    { x: '21:00', y: 20 },
-    { x: '22:00', y: 19 },
-  ];
-
+  
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Weather App</h1>
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <SearchBar onSearch={handleSearch} />
-          <WeatherDetails weatherData={weatherData} onAddFavorite={addFavorite} />
-          <TemperatureChart chartData={chartData} />
+    <div className="app">
+      <Header />
+      <div className="container mt-5">
+        <div className="row justify-content-center">
+          <div className="col-md-8">
+            <SearchBar onSearch={handleSearch} />
+            <WeatherDetails
+              weatherData={weatherData}
+              onAddFavorite={addFavorite}
+              onClose={handleCloseWeatherDetails}
+              isVisible={isWeatherDetailsOpen}
+            />
+            <HourlyWeather hourlyData={hourlyData} isVisible={isWeatherDetailsOpen} />
+          </div>
         </div>
+        <Favorites 
+        favorites={favorites} 
+        onRemove={removeFavorite} 
+        hourlyData={hourlyData} 
+        weatherData={weatherData} />
       </div>
-      <Favorites favorites={favorites} onRemove={removeFavorite} />
     </div>
   );
 };

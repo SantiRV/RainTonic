@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import '../styles/SearchBar.css'
+import '../styles/SearchBar.css';
 
 const SearchBar = ({ onSearch }) => {
   const [city, setCity] = useState('');
@@ -13,7 +13,7 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="d-flex">
+    <form onSubmit={handleSubmit} className="d-flex searchbar">
       <input
         type="text"
         className="form-control me-2"
