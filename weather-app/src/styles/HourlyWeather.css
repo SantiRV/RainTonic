@@ -50,3 +50,9 @@
   font-size: 24px;
   color: #ff8c00; 
 }
+
+.hourly-weather-container h3 {
+  text-align: center; 
+  margin-bottom: 20px; 
+}
+

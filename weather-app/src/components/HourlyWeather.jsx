@@ -31,7 +31,7 @@ const HourlyWeather = ({ hourlyData, isVisible }) => {
   return (
     <div className="hourly-weather-background">
       <div className="hourly-weather-container">
-        <h3>meteo nelle prossime 24 ore</h3>
+        <h3>Meteo nelle prossime 24 ore</h3>
         <div className="hourly-weather-list">
           {hourlyData.map((item, index) => (
             <div key={index} className="hourly-weather-item">
