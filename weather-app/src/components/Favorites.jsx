@@ -40,7 +40,7 @@ const Favorites = ({ favorites, onRemove, hourlyData }) => {
                       className="btn btn-info btn-sm"
                       onClick={() => handleExpand(city.name)}
                     >
-                      {expandedCity === city.name ? 'Cerrar' : 'Ver detalles'}
+                      {expandedCity === city.name ? 'Chiudi' : 'Vedere i dettagli'}
                     </button>
                   </div>
                 </div>

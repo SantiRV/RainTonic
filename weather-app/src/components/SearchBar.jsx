@@ -17,7 +17,7 @@ const SearchBar = ({ onSearch }) => {
       <input
         type="text"
         className="form-control me-2"
-        placeholder="Busca una ciudad..."
+        placeholder="Trova una città..."
         value={city}
         onChange={(e) => setCity(e.target.value)}
       />
