@@ -5,18 +5,18 @@ Ecco un riepilogo delle principali funzionalità e componenti implementati:
 
 Componenti principali
 
-SearchBar
+SearchBar:
 Un componente che consente agli utenti di cercare una città. Effettua una chiamata API per ottenere le coordinate geografiche della città inserita dall'utente e utilizza queste 
 informazioni per recuperare i dati meteorologici.
 
-WeatherDetails
+WeatherDetails:
 Mostra i dettagli del clima attuale della città selezionata, inclusa la temperatura, la velocità del vento e altre informazioni utili. Offre anche un pulsante per 
 aggiungere la città ai preferiti.
 
-HourlyWeather
+HourlyWeather:
 Visualizza un grafico o un elenco con le previsioni orarie delle temperature e dei codici meteo per le successive 24 ore.
 
-Favorites
+Favorites:
 Questo componente permette di visualizzare tutte le città salvate come preferite. Le città vengono mostrate come card, e ogni card contiene:
 
 Il nome della città.
@@ -24,7 +24,7 @@ La temperatura attuale (se disponibile).
 Pulsanti per rimuovere la città dai preferiti o espandere la card per visualizzare dettagli come le previsioni orarie e il clima attuale.
 Le card si espandono al centro dello schermo e consentono di scorrere il contenuto all'interno.
 
-Header
+Header:
 Un semplice componente che include il titolo dell'applicazione.
 
 Funzioni e logica principale
